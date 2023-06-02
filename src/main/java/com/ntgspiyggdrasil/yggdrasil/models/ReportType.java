@@ -6,14 +6,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-@Entity
 @Data
+@Entity
 @Table(name = "reports_types")
 @NoArgsConstructor
 public class ReportType {
-    public ReportType(String name) {
-        this.name = name;
-    }
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,5 +19,5 @@ public class ReportType {
     private String name;
     @Transient
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportType")
-    private Set<Report> reports;
+    private Set<ReportStructure> reportStructures;
 }

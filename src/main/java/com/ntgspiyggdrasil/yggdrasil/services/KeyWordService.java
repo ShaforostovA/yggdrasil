@@ -43,7 +43,6 @@ public class KeyWordService {
         Set<KeyWord> keyWordAttached = keyWordRepository.findByDocumentId(documentId);
 
             if (!keyWordAttached.isEmpty()) {
-                System.out.println("not null");
                 keyWordAttached.forEach(keyWordAttach -> {
                     if(!keyWords.contains(keyWordAttach.getName())) {
                         keyWordRepository.deleteAttachDocumentKeyWord(documentId, keyWordAttach.getId());
@@ -71,5 +70,16 @@ public class KeyWordService {
             }
 
         return keyWordRepository.findByDocumentId(documentId).stream().map(keyWord -> new KeyWordResponse(keyWord.getId(), keyWord.getName())).collect(Collectors.toList());
+    }
+
+    public KeyWord updateKeyWord(long keyWordId, String keyWordName) {
+        KeyWord keyWord = keyWordRepository.findById(keyWordId).orElseThrow();
+        keyWord.setName(keyWordName);
+        return keyWordRepository.save(keyWord);
+    }
+
+    public void deleteKeyWord(long keyWordId) {
+        keyWordRepository.deleteAttachDocumentKeyWord(keyWordId);
+        keyWordRepository.deleteById(keyWordId);
     }
 }

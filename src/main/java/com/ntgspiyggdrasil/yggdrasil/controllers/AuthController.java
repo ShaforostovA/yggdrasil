@@ -1,14 +1,13 @@
 package com.ntgspiyggdrasil.yggdrasil.controllers;
 
-import com.ntgspiyggdrasil.yggdrasil.payload.response.TokenInfo;
-import com.ntgspiyggdrasil.yggdrasil.payload.response.UserShortModel;
+import com.ntgspiyggdrasil.yggdrasil.payload.response.*;
 import com.ntgspiyggdrasil.yggdrasil.repository.RoleRepository;
 import com.ntgspiyggdrasil.yggdrasil.repository.UserRepository;
 import com.ntgspiyggdrasil.yggdrasil.security.services.UserDetailsImpl;
 import com.ntgspiyggdrasil.yggdrasil.payload.request.LoginRequest;
-import com.ntgspiyggdrasil.yggdrasil.payload.response.JwtResponse;
 import com.ntgspiyggdrasil.yggdrasil.security.jwt.JwtUtils;
 import com.ntgspiyggdrasil.yggdrasil.services.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,6 +40,9 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Validated @RequestBody LoginRequest loginRequest) {
 
@@ -63,5 +65,22 @@ public class AuthController {
                 userDetails.getName(),
                 userDetails.getPatronymic(),
                 roles));
+    }
+
+
+    @GetMapping("/token/check")
+    public ResponseEntity<?> checkUserToken(@RequestHeader("Authorization") String authorization) {
+        String headerAuth = authorization;
+        String username;
+        UserModel user;
+        Boolean validToken;
+        try {
+            username = jwtUtils.getUserNameFromJwtToken(headerAuth.substring(7,headerAuth.length()));
+            user = UserModel.toModel(userService.loadUserByUserName(username));
+            validToken = jwtUtils.validateJwtToken(headerAuth.substring(7,headerAuth.length()));
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.ok(new ValidateUser(false, false));
+        }
+        return ResponseEntity.ok(new ValidateUser(validToken, user.getIsActive()));
     }
 }

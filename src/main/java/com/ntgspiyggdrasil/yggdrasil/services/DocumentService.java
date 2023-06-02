@@ -4,17 +4,25 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.gson.JsonObject;
 import com.ntgspiyggdrasil.yggdrasil.models.*;
 import com.ntgspiyggdrasil.yggdrasil.payload.request.DatePerRequest;
+import com.ntgspiyggdrasil.yggdrasil.payload.request.DepartmentDocumentsRequest;
 import com.ntgspiyggdrasil.yggdrasil.payload.request.DocumentCreateRequest;
+import com.ntgspiyggdrasil.yggdrasil.payload.request.FacultyDocumentsRequest;
 import com.ntgspiyggdrasil.yggdrasil.payload.response.DocumentShortModel;
 import com.ntgspiyggdrasil.yggdrasil.payload.response.StatisticDocumentResponse;
 import com.ntgspiyggdrasil.yggdrasil.payload.response.UserShortModel;
 import com.ntgspiyggdrasil.yggdrasil.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.tomcat.util.json.JSONParser;
 import org.hibernate.dialect.PostgreSQLJsonbJdbcType;
 import org.hibernate.dialect.PostgreSQLPGObjectJdbcType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.print.Doc;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,8 +42,6 @@ public class DocumentService {
     private KeyWordRepository keyWordRepository;
 
 
-
-
     public DocumentShortModel getDocumentById(long documentId) {
         return DocumentShortModel.toModel(documentRepository.findById(documentId).orElseThrow());
     }
@@ -45,16 +51,50 @@ public class DocumentService {
     public DocumentShortModel getDocumentByIdAndDepartment(long departmentId, long documentId) {
         return DocumentShortModel.toModel(documentRepository.findByIdAndDepartmentId(departmentId, documentId).orElseThrow());
     }
-    public List<DocumentShortModel> getDocuments() {
-        return documentRepository.findAllByDocumentForAdmin().stream().map(DocumentShortModel::toModel).collect(Collectors.toList());
+    public Page<Document> getDocuments(String parameter, String sortField, String sortDir, int pageNumber, String statusName, Date minDate, Date maxDate, String documentType) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(pageNumber - 1, 15, sort);
+        return documentRepository.findAllByDocumentForAdmin(parameter, statusName, minDate, maxDate, documentType, pageable);
     }
 
-    public List<DocumentShortModel> getDocumentsByDepartmentId(long departmentId, long userId) {
-        return documentRepository.findAllByUserDepartmentId(departmentId, userId).stream().map(DocumentShortModel::toModel).collect(Collectors.toList());
+    public Page<Document> getDocumentsByKeyWords(String keyWords, String sortField, String sortDir, int pageNumber, String statusName, Date minDate, Date maxDate, String documentType) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(pageNumber - 1, 15, sort);
+        return documentRepository.findAllByDocumentForAdminKeyWord(keyWords, statusName, minDate, maxDate, documentType, pageable);
     }
 
-    public List<DocumentShortModel> getDocumentsByUserId(long userId) {
-        return documentRepository.findAllByUserId(userId).stream().map(DocumentShortModel::toModel).collect(Collectors.toList());
+    public Page<Document> getDocumentsByDepartmentId(long departmentId, long userId, String parameter, String sortField, String sortDir, int pageNumber, String statusName, Date minDate, Date maxDate, String documentType) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(pageNumber - 1, 15, sort);
+
+        return documentRepository.findAllByUserDepartmentId(departmentId, userId, parameter, statusName, minDate, maxDate, documentType, pageable);
+    }
+
+    public Page<Document> loadDocumentsByDepartmentKeyword(long departmentId, long userId, String keyWords, String sortField, String sortDir, int pageNumber, String statusName, Date minDate, Date maxDate, String documentType) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(pageNumber - 1, 15, sort);
+
+        return documentRepository.findAllByDepartmentAndKeyWord(departmentId, userId, keyWords, statusName, minDate, maxDate, documentType, pageable);
+    }
+
+    public Page<Document> getDocumentsByUserId(long userId, String parameter, String sortField, String sortDir, int pageNumber, String statusName, Date minDate, Date maxDate, String documentType) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(pageNumber - 1, 15, sort);
+
+        return documentRepository.findAllByUserIdPageable(userId, parameter, statusName, minDate, maxDate, documentType, pageable);
+    }
+
+    public Page<Document> getDocumentsByUserIdKeyword(long userId, String keyWords, String sortField, String sortDir, int pageNumber, String statusName, Date minDate, Date maxDate, String documentType) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(pageNumber - 1, 15, sort);
+
+        return documentRepository.findAllByUserIdPageableKeyWord(userId, keyWords, statusName, minDate, maxDate, documentType, pageable);
     }
 
     public Document createDocument(DocumentCreateRequest document) {
@@ -91,17 +131,21 @@ public class DocumentService {
 //        PostgreSQLJsonbJdbcType jsonbJdbcType = new PostgreSQLJsonbJdbcType();
 //        JSONParser parser = new JSONParser(documentData);
 //        PostgreSQLPGObjectJdbcType = (PostgreSQLPGObjectJdbcType) JSON.parser;
-        documentRepository.updateDocumentDataById(documentId, documentData);
-        return documentRepository.findById(documentId).orElseThrow();
+        Document document = documentRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("DocumentEntity not found with id: " + documentId));
+//        documentRepository.updateDocumentDataById(documentId, documentData);
+        document.setDocumentData(documentData);
+        document.setDateUpdate(new Date());
+        //return documentRepository.findById(documentId).orElseThrow();
+        return documentRepository.save(document);
     }
 
-    public List<StatisticDocumentResponse> getStatisticsUser(long userId, DatePerRequest datePerRequest) {
+    public List<StatisticDocumentResponse> getStatisticsUser(long userId, Date minDate, Date maxDate) {
         List<DocumentType> documentTypes = documentTypeRepository.findAll();
         List<StatisticDocumentResponse> statisticResponses = new ArrayList<>();
         documentTypes.forEach(documentType -> {
             for (int i = 1; i <= 4; ++i) {
                 StatisticDocumentResponse statisticData = new StatisticDocumentResponse();
-                List<Document> documents = documentRepository.findCountDocumentUser(userId, i, documentType.getId(), datePerRequest.getMinDate(), datePerRequest.getMaxDate());
+                List<Document> documents = documentRepository.findCountDocumentUser(userId, i, documentType.getId(), minDate, maxDate);
                 statisticData.setCount(documents.size());
                 switch (i) {
                     case 1: statisticData.setStatusName("Черновик");
@@ -120,13 +164,13 @@ public class DocumentService {
         return statisticResponses;
     }
 
-    public List<StatisticDocumentResponse> getStatisticsDepartment(long departmentId, DatePerRequest datePerRequest) {
+    public List<StatisticDocumentResponse> getStatisticsDepartment(long departmentId, Date minDate, Date maxDate) {
         List<DocumentType> documentTypes = documentTypeRepository.findAll();
         List<StatisticDocumentResponse> statisticResponses = new ArrayList<>();
         documentTypes.forEach(documentType -> {
             for (int i = 1; i <= 4; ++i) {
                 StatisticDocumentResponse statisticData = new StatisticDocumentResponse();
-                List<Document> documents = documentRepository.findCountDocumentByDepartmentId(departmentId, i, documentType.getId(), datePerRequest.getMinDate(), datePerRequest.getMaxDate());
+                List<Document> documents = documentRepository.findCountDocumentByDepartmentId(departmentId, i, documentType.getId(), minDate, maxDate);
                 statisticData.setCount(documents.size());
                 switch (i) {
                     case 1: statisticData.setStatusName("Черновик");
@@ -145,13 +189,13 @@ public class DocumentService {
         return statisticResponses;
     }
 
-    public List<StatisticDocumentResponse> getStatisticsFaculty(long facultyId, DatePerRequest datePerRequest) {
+    public List<StatisticDocumentResponse> getStatisticsFaculty(long facultyId, Date minDate, Date maxDate) {
         List<DocumentType> documentTypes = documentTypeRepository.findAll();
         List<StatisticDocumentResponse> statisticResponses = new ArrayList<>();
         documentTypes.forEach(documentType -> {
             for (int i = 1; i <= 4; ++i) {
                 StatisticDocumentResponse statisticData = new StatisticDocumentResponse();
-                List<Document> documents = documentRepository.findCountDocumentByFacultyId(facultyId, i, documentType.getId(), datePerRequest.getMinDate(), datePerRequest.getMaxDate());
+                List<Document> documents = documentRepository.findCountDocumentByFacultyId(facultyId, i, documentType.getId(), minDate, maxDate);
                 statisticData.setCount(documents.size());
                 switch (i) {
                     case 1: statisticData.setStatusName("Черновик");
@@ -170,13 +214,13 @@ public class DocumentService {
         return statisticResponses;
     }
 
-    public List<StatisticDocumentResponse> getStatisticsAll(DatePerRequest datePerRequest) {
+    public List<StatisticDocumentResponse> getStatisticsAll(Date minDate, Date maxDate) {
         List<DocumentType> documentTypes = documentTypeRepository.findAll();
         List<StatisticDocumentResponse> statisticResponses = new ArrayList<>();
         documentTypes.forEach(documentType -> {
             for (int i = 1; i <= 4; ++i) {
                 StatisticDocumentResponse statisticData = new StatisticDocumentResponse();
-                List<Document> documents = documentRepository.findCountDocumentAll(i, documentType.getId(), datePerRequest.getMinDate(), datePerRequest.getMaxDate());
+                List<Document> documents = documentRepository.findCountDocumentAll(i, documentType.getId(), minDate, maxDate);
                 statisticData.setCount(documents.size());
                 switch (i) {
                     case 1: statisticData.setStatusName("Черновик");
@@ -193,5 +237,29 @@ public class DocumentService {
             }
         });
         return statisticResponses;
+    }
+
+    public void updateDocumentStatusRemake(long documentStructureId) {
+        documentRepository.updateDocumentStatusRemake(documentStructureId);
+    }
+
+    public List<Document> loadAllDocuments(FacultyDocumentsRequest facultyDocuments) {
+        return documentRepository.findDocumentAllByStructureIdFacultyId(facultyDocuments.getDocumentStructureId(), facultyDocuments.getFacultyId(), facultyDocuments.getMinDate(), facultyDocuments.getMaxDate());
+    }
+
+    public List<Document> loadAllDocuments(DepartmentDocumentsRequest departmentDocuments) {
+        return documentRepository.findDocumentAllByStructureIdDepartmentId(departmentDocuments.getDocumentStructureId(), departmentDocuments.getDepartmentId(), departmentDocuments.getMinDate(), departmentDocuments.getMaxDate());
+    }
+
+    public Boolean archivingDocuments(long documentStructureId, long documentStatusId, Date minDate, Date maxDate) {
+        documentRepository.archivingDocuments(documentStructureId, documentStatusId, minDate, maxDate);
+        return true;
+    }
+
+    public List<Document> getFacultyDocumentsForExport(long documentStructureId, long faultyId, Date minDate, Date maxDate) {
+        return documentRepository.findAllByFacultyForExport(documentStructureId, faultyId, minDate, maxDate);
+    }
+    public List<Document> getDepartmentDocumentsForExport(long documentStructureId, long departmentId, Date minDate, Date maxDate) {
+        return documentRepository.findAllByDepartmentForExport(documentStructureId, departmentId, minDate, maxDate);
     }
 }

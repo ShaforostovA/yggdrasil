@@ -12,6 +12,10 @@ import com.ntgspiyggdrasil.yggdrasil.repository.DepartmentRepository;
 import com.ntgspiyggdrasil.yggdrasil.repository.RoleRepository;
 import com.ntgspiyggdrasil.yggdrasil.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,13 +38,19 @@ public class UserService {
     public UserShortModel loadShortUserByUsername(String username) {
         return UserShortModel.toModel(userRepository.findByUsername(username).orElseThrow());
     }
+    public User loadUserByUserName(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+    }
     // админы, модератор, пользователь
     public List<UserModel> loadAllUserByDepartmentId(long departmentId) {
         return userRepository.findAllUsersDepartmentByDepartmentId(departmentId).stream().map(UserModel::toModel).collect(Collectors.toList());
     }
     // модератор
-    public List<UserModel> loadAllUserNoModerByDepartmentId(long departmentId) {
-        return userRepository.findAllUsersDepartmentNoModerByDepartmentId(departmentId).stream().map(UserModel::toModel).collect(Collectors.toList());
+    public Page<User> loadAllUserNoModerByDepartmentId(long departmentId, String parameter, String sortField, String sortDir, int pageNumber, Boolean isActive, Date minDate, Date maxDate, String userRole, String departmentName, Boolean isState) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(pageNumber - 1, 15, sort);
+        return userRepository.findAllUsersDepartmentNoModerByDepartmentId(departmentId, parameter, isActive, minDate, maxDate, userRole, departmentName, isState, pageable);
     }
     // админы
     public List<UserModel> loadAllUserByFacultyId(long facultyId) {
@@ -49,6 +59,12 @@ public class UserService {
     // админы
     public List<UserModel> loadAllUserNoAdmins() {
         return userRepository.findAllUsersNoAdmins().stream().map(UserModel::toModel).collect(Collectors.toList());
+    }
+    public Page<User> loadAllUserNoAdminsPaginate(String parameter, String sortField, String sortDir, int pageNumber, Boolean isActive, Date minDate, Date maxDate, String userRole, String departmentName, Boolean isState) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(pageNumber - 1, 15, sort);
+        return userRepository.findAllUsersNoAdminsPaginate(parameter, isActive, minDate, maxDate, userRole, departmentName, isState, pageable);
     }
     // тех. админ.
     public List<UserModel> loadAllUserNoSupAdmins() {
@@ -94,5 +110,19 @@ public class UserService {
         newUser.setIsActive(true);
 
         return userRepository.save(newUser);
+    }
+
+    public User updateUserStatus(long userId, Boolean isActive) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException());
+        user.setIsActive(isActive);
+        user.setDateUpdate(new Date());
+        return userRepository.save(user);
+    }
+
+    public User updateUserPassword(long userId, String password) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException());
+        user.setPassword(encoder.encode(password));
+        user.setDateUpdate(new Date());
+        return userRepository.save(user);
     }
 }

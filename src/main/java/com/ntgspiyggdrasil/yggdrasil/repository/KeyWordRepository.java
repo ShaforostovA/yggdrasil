@@ -5,6 +5,7 @@ import com.ntgspiyggdrasil.yggdrasil.models.KeyWord;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,4 +20,7 @@ public interface KeyWordRepository extends JpaRepository<KeyWord, Long> {
     long attachDocumentKeyWord(long documentId, long keyWordId);
     @Query(value = "delete from document_attached_keywords kw where kw.document_id = ?1 and kw.keyword_id = ?2 RETURNING *", nativeQuery = true)
     long deleteAttachDocumentKeyWord(long documentId, long keyWordId);
+
+    @Query(value = "delete from document_attached_keywords kw where kw.keyword_id = ?1 RETURNING *", nativeQuery = true)
+    List<Long> deleteAttachDocumentKeyWord(long keyWordId);
 }

@@ -11,5 +11,6 @@ public class DocumentStructuresShortResponse {
     private long id;
     private String name;
     private String description;
+    private Boolean isActive;
     private Date dateCreate;
 }

@@ -7,7 +7,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -15,15 +14,6 @@ import java.util.Set;
 @Table(name = "reports_structures")
 @NoArgsConstructor
 public class ReportStructure {
-    public ReportStructure(String name, String description, String reportStructure, Long newStructureId, Date dateUpdate, Date dateCreate) {
-        this.name = name;
-        this.description = description;
-        this.reportStructure = reportStructure;
-        this.oldStructureId = newStructureId;
-        this.dateUpdate = dateUpdate;
-        this.dateCreate = dateCreate;
-    }
-
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +33,11 @@ public class ReportStructure {
     private Date dateUpdate;
     @Column(name = "old_structure_id")
     private Long oldStructureId;
-    @Transient
+    @Column(name = "is_active")
+    private Boolean isActive;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_type_id", referencedColumnName = "id")
+    private ReportType reportType;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportStructure")
     private Set<Report> reports;
 }

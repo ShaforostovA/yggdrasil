@@ -35,6 +35,8 @@ public class DocumentStructure {
     private Date dateUpdate;
     @Column(name = "old_structure_id")
     private Long oldStructureId;
+    @Column(name = "is_active")
+    private Boolean isActive;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "document_type_id", referencedColumnName = "id")
     private DocumentType documentType;

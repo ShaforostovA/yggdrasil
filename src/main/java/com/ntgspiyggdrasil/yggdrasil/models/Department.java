@@ -43,5 +43,7 @@ public class Department {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
     private List<User> users;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
+    private List<Student> students;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
     private List<DocumentPermission> DocumentPermissions;
 }

@@ -2,6 +2,8 @@ package com.ntgspiyggdrasil.yggdrasil.controllers;
 
 import com.ntgspiyggdrasil.yggdrasil.models.User;
 import com.ntgspiyggdrasil.yggdrasil.payload.request.KeyWordsRequest;
+import com.ntgspiyggdrasil.yggdrasil.payload.request.UpdateKeyWord;
+import com.ntgspiyggdrasil.yggdrasil.payload.response.KeyWordModel;
 import com.ntgspiyggdrasil.yggdrasil.payload.response.KeyWordResponse;
 import com.ntgspiyggdrasil.yggdrasil.payload.response.UserShortModel;
 import com.ntgspiyggdrasil.yggdrasil.repository.UserRepository;
@@ -10,6 +12,8 @@ import com.ntgspiyggdrasil.yggdrasil.services.KeyWordService;
 import com.ntgspiyggdrasil.yggdrasil.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,5 +45,17 @@ public class KeyWordController {
     @GetMapping("/document/{documentId}")
     public List<KeyWordResponse> getDocumentKeyWords(@PathVariable("documentId") long documentId) {
         return keyWordService.getDocumentKeyWords(documentId);
+    }
+
+    @PostMapping("/update/{keyWordId}")
+    public KeyWordModel updateKeyWord(@PathVariable("keyWordId") long keyWordId, @RequestBody UpdateKeyWord updateKeyWord) {
+        return KeyWordModel.toModel(keyWordService.updateKeyWord(keyWordId, updateKeyWord.getKeyWordName()));
+    }
+
+    @DeleteMapping("/delete/{keyWordId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity deleteKeyWord(@PathVariable("keyWordId") long keyWordId) {
+        keyWordService.deleteKeyWord(keyWordId);
+        return ResponseEntity.ok().build();
     }
 }

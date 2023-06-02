@@ -1,6 +1,5 @@
 package com.ntgspiyggdrasil.yggdrasil.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,27 +19,6 @@ import java.util.Set;
         })
 @NoArgsConstructor
 public class User {
-//    public User(String username, String password, Set<Role> roles, String phone, String email, String imgUrl, String lastName, String name, String patronymic, String jobTitle, Boolean isState, String academicTitle, String academicDegree, String orcid, String spinCode, Department department, Date birthday, Date dateCreate, Date dateUpdate) {
-//        this.username = username;
-//        this.password = password;
-//        this.roles = roles;
-//        this.phone = phone;
-//        this.email = email;
-//        this.imgUrl = imgUrl;
-//        this.lastName = lastName;
-//        this.name = name;
-//        this.patronymic = patronymic;
-//        this.jobTitle = jobTitle;
-//        this.isState = isState;
-//        this.academicTitle = academicTitle;
-//        this.academicDegree = academicDegree;
-//        this.orcid = orcid;
-//        this.spinCode = spinCode;
-//        this.department = department;
-//        this.birthday = birthday;
-//        this.dateCreate = dateCreate;
-//        this.dateUpdate = dateUpdate;
-//    }
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

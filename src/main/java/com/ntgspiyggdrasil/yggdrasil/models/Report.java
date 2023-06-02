@@ -14,34 +14,10 @@ import java.util.Map;
 @Table(name = "reports")
 @NoArgsConstructor
 public class Report {
-    public Report(ReportStructure reportStructure, User user, ReportType reportType, ReportStatus reportStatus, String reportData, Boolean canChange, Date dateStart, Date dateEnd, Date dateCreate, Date dateUpdate) {
-        this.reportStructure = reportStructure;
-        this.user = user;
-        this.reportType = reportType;
-        this.reportStatus = reportStatus;
-        this.reportData = reportData;
-        this.canChange = canChange;
-        this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
-        this.dateCreate = dateCreate;
-        this.dateUpdate = dateUpdate;
-    }
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "report_structure_id", nullable = false)
-    private ReportStructure reportStructure;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "report_type_id", nullable = false)
-    private ReportType reportType;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "report_status_id", nullable = false)
-    private ReportStatus reportStatus;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "report_data", columnDefinition = "jsonb")
     private String reportData;
@@ -59,4 +35,13 @@ public class Report {
     @JdbcTypeCode(SqlTypes.TIMESTAMP)
     @Column(name = "date_end")
     private Date dateEnd;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_structure_id", referencedColumnName = "id")
+    private ReportStructure reportStructure;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_status_id", referencedColumnName = "id")
+    private ReportStatus reportStatus;
 }

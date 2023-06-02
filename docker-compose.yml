@@ -1,0 +1,35 @@
+version: '3.1'
+services:
+  app:
+    image: shaforostov/yggdrasile-back
+    ports:
+      - "8888:8080"
+    restart: on-failure
+    depends_on:
+      - postgresql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  front:
+    image: shaforostov/yggdrasile-front
+    ports:
+      - "9999:8080"
+    restart: on-failure
+    depends_on:
+      - app
+  postgresql:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    restart: on-failure
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

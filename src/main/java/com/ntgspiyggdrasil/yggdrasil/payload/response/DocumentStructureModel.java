@@ -22,6 +22,7 @@ public class DocumentStructureModel {
         model.setDateUpdate(entity.getDateUpdate());
         model.setOldStructureId(entity.getOldStructureId());
         model.setDocumentType(DocumentTypeModel.toModel(entity.getDocumentType()));
+        model.setIsActive(entity.getIsActive());
         return model;
     }
     private Long id;
@@ -32,4 +33,5 @@ public class DocumentStructureModel {
     private Date dateUpdate;
     private Long oldStructureId;
     private DocumentTypeModel documentType;
+    private Boolean isActive;
 }

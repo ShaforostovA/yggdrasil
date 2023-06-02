@@ -47,6 +47,8 @@
 			<version>2.3.1</version>
 		</dependency>
 
+
+
 <!--		<dependency>-->
 <!--			<groupId>org.springframework.boot</groupId>-->
 <!--			<artifactId>spring-security-oauth2-resource-server</artifactId>-->
@@ -70,6 +72,17 @@
 <!--			<version>2.21.1</version>-->
 <!--		</dependency>-->
 
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>5.2.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.3</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -94,6 +107,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<finalName>yggdrasile</finalName>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
