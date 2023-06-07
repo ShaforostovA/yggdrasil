@@ -9,5 +9,4 @@ public class YggdrasilApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(YggdrasilApplication.class, args);
 	}
-
 }
