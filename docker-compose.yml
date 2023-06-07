@@ -8,9 +8,9 @@ services:
     depends_on:
       - postgresql
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/yggdrasil-prod
+      - SPRING_DATASOURCE_USERNAME=ntgspiyggdrasil
+      - SPRING_DATASOURCE_PASSWORD=ntgspi447921
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
   front:
     image: shaforostov/yggdrasile-front
@@ -21,13 +21,15 @@ services:
       - app
   postgresql:
     image: postgres:latest
+    volumes:
+      - ~/docker/volumes/postgresqldata/:/var/lib/postgresql/data/
     ports:
-      - "5432:5432"
+      - "5433:5432"
     restart: on-failure
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=ntgspi447921
+      - POSTGRES_USER=ntgspiyggdrasil
+      - POSTGRES_DB=yggdrasil-prod
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
