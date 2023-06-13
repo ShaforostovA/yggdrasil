@@ -23,6 +23,7 @@ services:
     image: postgres:latest
     volumes:
       - ~/docker/volumes/postgresqldata/:/var/lib/postgresql/data/
+      - ./db/SqlQuery.sql:/var/lib/SqlQuery.sql
     ports:
       - "5433:5432"
     restart: on-failure
