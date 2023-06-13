@@ -83,4 +83,8 @@ public class AuthController {
         }
         return ResponseEntity.ok(new ValidateUser(validToken, user.getIsActive()));
     }
+    @GetMapping("/ping")
+    public String checkPing() {
+        return "Pong";
+    }
 }
