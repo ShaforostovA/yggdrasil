@@ -3,7 +3,7 @@ services:
   app:
     image: shaforostov/yggdrasile-back
     ports:
-      - "8888:8080"
+      - "55000:8080"
     restart: on-failure
     depends_on:
       - postgresql
