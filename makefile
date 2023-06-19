@@ -5,6 +5,7 @@ del:
     # remove all images
 	docker-compose down --rmi all
 build: del
+	git pull
 	docker-compose up --no-start
 	docker-compose start
 
