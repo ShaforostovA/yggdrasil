@@ -45,6 +45,7 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Validated @RequestBody LoginRequest loginRequest) {
+        System.out.println("[authenticateUser] " + loginRequest.getUsername() + ":" + loginRequest.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -85,6 +86,7 @@ public class AuthController {
     }
     @GetMapping("/ping")
     public String checkPing() {
+        System.out.println("[checkPing] " + "pong");
         return "Pong";
     }
 }
