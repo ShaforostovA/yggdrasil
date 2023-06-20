@@ -12,7 +12,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/yggdrasil-prod
       - SPRING_DATASOURCE_USERNAME=ntgspiyggdrasil
       - SPRING_DATASOURCE_PASSWORD=ntgspi447921
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=create
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 #  front:
 #    image: shaforostov/yggdrasile-front
 #    ports:
