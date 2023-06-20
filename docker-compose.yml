@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   app:
-    image: shaforostov/yggdrasile-back
+    image: venikshow/yggdrasile-back
     ports:
 #      - "55000:8080"
       - "80:80"
@@ -32,8 +32,3 @@ services:
       - POSTGRES_PASSWORD=ntgspi447921
       - POSTGRES_USER=ntgspiyggdrasil
       - POSTGRES_DB=yggdrasil-prod
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
