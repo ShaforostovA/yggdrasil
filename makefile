@@ -11,12 +11,12 @@ build: del
 
 deploy-client:
 	cd ../yggdrasil-client/ && \
-		docker build -t venikshow/yggdrasile-front . && \
-		docker push venikshow/yggdrasile-front
+		docker build -t shaforostov/yggdrasile-front . && \
+		docker push shaforostov/yggdrasile-front
 
 deploy-server:
-	docker build -t venikshow/yggdrasile-back . && \
-	docker push venikshow/yggdrasile-back
+	docker build -t shaforostov/yggdrasile-back . && \
+	docker push shaforostov/yggdrasile-back
 
 deploy-all: deploy-client deploy-server
 
