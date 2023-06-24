@@ -1,6 +1,7 @@
 FROM maven:3.9.1-amazoncorretto-19-debian
 
-RUN apt-get update && apt-get install -y ttf-mscorefonts-installer ttf-ubuntu-font-family && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y ttf-mscorefonts-installer ttf-ubuntu-font-family
 RUN fc-cache -f -v
 
 ADD . /yggdrasil
