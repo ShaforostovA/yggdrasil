@@ -532,7 +532,7 @@ public class DocumentController {
     }
 
     @PostMapping(value = "/combined/export", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN') or hasRole('MODERATOR')")
     @ResponseBody
     public ResponseEntity<byte[]> combinedExportToExcel(@RequestBody CombinedReportExportRequest reportExportData) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();

@@ -127,10 +127,10 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     @Query(value = "update documents set document_structure_id = ?2, date_update = now() where documents.document_structure_id = ?1 and documents.document_status_id <> 4", nativeQuery = true)
     void replacementDocumentStructure(long findDocumentStructureId, long newDocumentStructureId);
 
-    @Query("select d from Document d where d.documentStructure.id = ?1 and d.user.department.faculty.id = ?2 and d.dateCreate >= ?3 and d.dateCreate <= ?4 and (d.documentStatus.id = 2 or d.documentStatus.id = 4)")
+    @Query("select d from Document d where d.documentStructure.id = ?1 and d.user.department.faculty.id = ?2 and d.dateCreate >= ?3 and d.dateCreate < ?4 and (d.documentStatus.id = 2 or d.documentStatus.id = 4)")
     List<Document> findDocumentAllByStructureIdFacultyId(long structureId, long facultyId, Date minDate, Date maxDate);
 
-    @Query("select d from Document d where d.documentStructure.id = ?1 and d.user.department.id = ?2 and d.dateCreate >= ?3 and d.dateCreate <= ?4 and (d.documentStatus.id = 2 or d.documentStatus.id = 4)")
+    @Query("select d from Document d where d.documentStructure.id = ?1 and (d.documentStatus.id = 2 or d.documentStatus.id = 4) and d.user.department.id = ?2 and d.dateCreate >= ?3 and d.dateCreate < ?4")
     List<Document> findDocumentAllByStructureIdDepartmentId(long structureId, long departmentId, Date minDate, Date maxDate);
 
     @Modifying

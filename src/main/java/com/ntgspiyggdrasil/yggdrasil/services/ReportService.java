@@ -44,7 +44,7 @@ public class ReportService {
 
     public Report createReport(CreateReportRequest report) {
         ReportStructure reportStructure = reportStructureRepository.findById(report.getReportStructureId()).orElseThrow();
-        ReportStatus reportStatus = reportStatusRepository.findById(report.getReportStatusId()).orElseThrow();
+        ReportStatus reportStatus = reportStatusRepository.findById(1L).orElseThrow();
         User user = userRepository.findById(report.getUserId()).orElseThrow();
 
         Report newReport = new Report();

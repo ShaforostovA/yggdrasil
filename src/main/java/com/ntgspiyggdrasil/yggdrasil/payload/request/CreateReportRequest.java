@@ -11,6 +11,7 @@ public class CreateReportRequest {
     private String reportData;
     private Date dateStart;
     private Date dateEnd;
+    private String description;
     private Long reportStructureId;
     private Long userId;
     private Long reportStatusId;

@@ -1,5 +1,7 @@
 package com.ntgspiyggdrasil.yggdrasil.payload.request;
 
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +12,6 @@ import java.util.Date;
 public class DepartmentDocumentsRequest {
     private long documentStructureId;
     private long departmentId;
-    private Date minDate;
-    private Date maxDate;
+    @Temporal(TemporalType.DATE) private Date minDate;
+    @Temporal(TemporalType.DATE) private Date maxDate;
 }
